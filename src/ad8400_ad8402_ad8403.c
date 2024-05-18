@@ -1,5 +1,7 @@
 #include <ad8400_ad8402_ad8403.h>
 
+#include <assert.h>
+
 ad8400_ad8402_ad8403_error_t ad8400_ad8402_ad8403_spi_main_transmit(ad8400_ad8402_ad8403_spi_main_t *spi_main, uint8_t data[], size_t size)
 {
     if (spi_main == NULL)
@@ -54,16 +56,14 @@ typedef enum ad8400_ad8402_ad8403_address_t
 
 static ad8400_ad8402_ad8403_error_t ad8400_ad8402_ad8403_set(ad8400_ad8402_ad8403_t *ad8400_ad8402_ad8403, ad8400_ad8402_ad8403_address_t addr, uint8_t data)
 {
+    assert(addr == AD8400_AD8402_AD8403_RDAC1 ||
+           addr == AD8400_AD8402_AD8403_RDAC2 ||
+           addr == AD8400_AD8402_AD8403_RDAC3 ||
+           addr == AD8400_AD8402_AD8403_RDAC4);
+
     if (ad8400_ad8402_ad8403 == NULL)
     {
         return AD8400_AD8402_AD8403_ERROR_NULL_POINTER;
-    }
-    else if (!(addr == AD8400_AD8402_AD8403_RDAC1 ||
-               addr == AD8400_AD8402_AD8403_RDAC2 ||
-               addr == AD8400_AD8402_AD8403_RDAC3 ||
-               addr == AD8400_AD8402_AD8403_RDAC4))
-    {
-        return AD8400_AD8402_AD8403_ERROR_INVALID_ADDRESS;
     }
 
     uint8_t data_[] = {(uint8_t)addr, //
