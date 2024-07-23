@@ -2,54 +2,42 @@
 #define AD8400_AD8402_AD8403_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-#include <stddef.h>
-#include <stdint.h>
+#ifndef AD8400_AD8402_AD8403_COMMON
+#define AD8400_AD8402_AD8403_COMMON
 
-    typedef enum ad8400_ad8402_ad8403_error_t
-    {
-        AD8400_AD8402_AD8403_SUCCESS,
-        AD8400_AD8402_AD8403_ERROR_NULL_POINTER,
-        AD8400_AD8402_AD8403_ERROR_I2C_FAILURE,
-        AD8400_AD8402_AD8403_ERROR_DIGITAL_OUTPUT_FAILURE
-    } ad8400_ad8402_ad8403_error_t;
+typedef enum ad8400_ad8402_ad8403_address_t {
+    AD8400_AD8402_AD8403_RDAC1,
+    AD8400_AD8402_AD8403_RDAC2,
+    AD8400_AD8402_AD8403_RDAC3,
+    AD8400_AD8402_AD8403_RDAC4
+} ad8400_ad8402_ad8403_address_t;
 
-    /**
-     * This naming is derived from the Analog Device's article.
-     * https://www.analog.com/resources/analog-dialogue/articles/introduction-to-spi-interface.html
-     */
-    typedef struct ad8400_ad8402_ad8403_spi_main_t
-    {
-        ad8400_ad8402_ad8403_error_t (*transmit)(struct ad8400_ad8402_ad8403_spi_main_t *, uint8_t[], size_t);
-    } ad8400_ad8402_ad8403_spi_main_t;
+#endif /* AD8400_AD8402_AD8403_COMMON */
 
-    ad8400_ad8402_ad8403_error_t ad8400_ad8402_ad8403_spi_main_transmit(ad8400_ad8402_ad8403_spi_main_t *, uint8_t[], size_t);
+#ifndef ad8400_ad8402_ad8403_spi_write
+#define ad8400_ad8402_ad8403_spi_write(buffer, count) do { } while (0)
+#endif /* ad8400_ad8402_ad8403_spi_write */
 
-    typedef struct ad8400_ad8402_ad8403_digital_output_t
-    {
-        ad8400_ad8402_ad8403_error_t (*set_high)(struct ad8400_ad8402_ad8403_digital_output_t *);
-        ad8400_ad8402_ad8403_error_t (*set_low)(struct ad8400_ad8402_ad8403_digital_output_t *);
-    } ad8400_ad8402_ad8403_digital_output_t;
+#ifndef ad8400_ad8402_ad8403_gpio_high
+#define ad8400_ad8402_ad8403_gpio_high() do { } while (0)
+#endif /* ad8400_ad8402_ad8403_gpio_high */
 
-    ad8400_ad8402_ad8403_error_t ad8400_ad8402_ad8403_digital_output_set_high(ad8400_ad8402_ad8403_digital_output_t *);
-    ad8400_ad8402_ad8403_error_t ad8400_ad8402_ad8403_digital_output_set_low(ad8400_ad8402_ad8403_digital_output_t *);
+#ifndef ad8400_ad8402_ad8403_gpio_low
+#define ad8400_ad8402_ad8403_gpio_low() do { } while (0)
+#endif /* ad8400_ad8402_ad8403_gpio_low */
 
-    typedef struct ad8400_ad8402_ad8403_t
-    {
-        ad8400_ad8402_ad8403_spi_main_t *spi_main;
-        ad8400_ad8402_ad8403_digital_output_t *shdn;
-    } ad8400_ad8402_ad8403_t;
+#define ad8400_ad8402_ad8403_set(address, data) \
+    do { \
+        unsigned char ad8400_ad8402_ad8403_internal_buffer[2] = {(unsigned char)(address), (unsigned char)(data)}; \
+        ad8400_ad8402_ad8403_spi_write(ad8400_ad8402_ad8403_internal_buffer, (size_t)2); \
+    } while (0)
 
-    ad8400_ad8402_ad8403_error_t ad8400_ad8402_ad8403_init(ad8400_ad8402_ad8403_t *, ad8400_ad8402_ad8403_spi_main_t *, ad8400_ad8402_ad8403_digital_output_t *);
-    ad8400_ad8402_ad8403_error_t ad8400_ad8402_ad8403_rdac1_set(ad8400_ad8402_ad8403_t *, uint8_t);
-    ad8400_ad8402_ad8403_error_t ad8400_ad8402_ad8403_rdac2_set(ad8400_ad8402_ad8403_t *, uint8_t);
-    ad8400_ad8402_ad8403_error_t ad8400_ad8402_ad8403_rdac3_set(ad8400_ad8402_ad8403_t *, uint8_t);
-    ad8400_ad8402_ad8403_error_t ad8400_ad8402_ad8403_rdac4_set(ad8400_ad8402_ad8403_t *, uint8_t);
-    ad8400_ad8402_ad8403_error_t ad8400_ad8402_ad8403_enter_shutdown_mode(ad8400_ad8402_ad8403_t *);
-    ad8400_ad8402_ad8403_error_t ad8400_ad8402_ad8403_enter_operational_mode(ad8400_ad8402_ad8403_t *);
+#define ad8400_ad8402_ad8403_shutdown() ad8400_ad8402_ad8403_gpio_low()
+
+#define ad8400_ad8402_ad8403_startup() ad8400_ad8402_ad8403_gpio_high()
 
 #ifdef __cplusplus
 }
